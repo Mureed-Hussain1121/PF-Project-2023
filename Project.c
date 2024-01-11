@@ -163,6 +163,8 @@ int main()
 							break;
 						}
 					}
+				printf("\n\n\n\tDo you want to continue to transaction[y/n] : ");
+				cont = getche();
 	}
 
     getch();
