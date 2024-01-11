@@ -146,6 +146,25 @@ int main()
 			break;
 		}
 	}
+
+	while(cont == 'y' || cont == 'Y'){
+					loop:
+					system("cls");
+					bankname();
+					printf("\n\n\t1.View balance\n\n\t2.Deposit money\n\n\t3.Withdraw money\n\n\t4.Money transfer\n\n\t5.Change PIN number\n\n\t6.Account Profile\n\n\t7.Log Out\n\n\t8.exit");
+					printf("\n\n\t--> ");
+					scanf("%d",&opt);
+					
+					switch(opt){
+						case 1:{
+							system("cls");
+							bankname();
+							printf("\n\n\tYour current balance is Rs.%d",user.balance);
+							break;
+						}
+					}
+	}
+
     getch();
     return 0;
 }
