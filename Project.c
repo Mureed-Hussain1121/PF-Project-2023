@@ -2,7 +2,6 @@
 #include<conio.h>
 #include<string.h>
 #include<stdlib.h>
-#include<unistd.h>
 
 struct account{
 	char name[40];
@@ -22,16 +21,14 @@ void bankname();
 
 int main()
 {
-	printf("\nTestting!!");
-	start:
 	system("cls");
-	bankname(); 
+	bankname();
 	int choice;
-	printf("\n\n\t1.Create count\n\t2.Login Account\n\t3.Exit");
+	printf("\n\n\t1.Create Account\n\n\t2.Login Account\n\n\t3.Exit");
 	printf("\n\n\t--> ");
 	scanf("%d",&choice);
-	struct account create,user1;
-	char filename[20],acc_num[20],pin[20],code[20];
+	struct account user,user1;
+	char filename[20],acc_num[20],pin[20],code[20],user_acc[20];
 	char cont = 'y',logout,end,select;
 	int opt,amt;
 	FILE *ptr;
@@ -45,43 +42,46 @@ int main()
 				printf("\n\t\t\tSystem error occured!!!");
 				return 1;
 			}
-		fread(&create.account_number,sizeof(create.account_number),1,file); 	//Read the value from file pointer
-		create.account_number++;	//Increment the previous file pointer value
-		fseek(file,0,SEEK_SET);		//Move the file pointer to the beginning
-		fwrite(&create.account_number,sizeof(create.account_number),1,file); 	//Write the incremented value to the file pointer
-		fclose(file);
 		getchar();
 		printf("\n\tEnter Your Name : ");
-		gets(create.name);
+		gets(user.name);
 		printf("\n\tEnter Your Date OF Birth (date-month-year) : ");
-		gets(create.dob);
+		gets(user.dob);
 		printf("\n\tEnter Your Phone Number eg(+92XXX-XXXXXXX) : ");
-		gets(create.contact);
+		gets(user.contact);
 		printf("\n\tEnter Your Email-ID : ");
-		gets(create.email);
+		gets(user.email);
 		printf("\n\tEnter Your City : ");
-		gets(create.city);
+		gets(user.city);
 		printf("\n\tEnter Your Residential Address : ");
-		gets(create.address);
+		gets(user.address);
 		printf("\n\tEnter Your CNIC Number eg(XXXXX-XXXXXXX-X) : ");
-		gets(create.CNIC);
+		gets(user.CNIC);
 		pword:
 		printf("\n\tEnter four digit PIN number for your Account : ");
-		gets(create.password);
-		if(strlen(create.password)!=4){
+		gets(user.password);
+		if(strlen(user.password)!=4){
 			printf("\n\tThe PIN must be of four digits");
 			goto pword;
 		}
-		sprintf(filename,"%d",create.account_number);
-		strcpy(code,create.account_code);
+		user.balance = 0;
+		
+		fread(&user.account_number,sizeof(user.account_number),1,file); 	//Read the value from file pointer
+		user.account_number++;	//Increment the previous file pointer value
+		fseek(file,0,SEEK_SET);		//Move the file pointer to the beginning
+		fwrite(&user.account_number,sizeof(user.account_number),1,file); 	//Write the incremented value to the file pointer
+		fclose(file);
+		
+		sprintf(filename,"%d",user.account_number);
+		strcpy(code,user.account_code);
 		strcat(code,filename);
 		strcpy(filename,code);	
 		ptr = fopen(strcat(filename,".bin"),"w");
-		fwrite(&create,sizeof(struct account),1,ptr);
+		fwrite(&user,sizeof(struct account),1,ptr);
 		if(fwrite!=0){
-		printf("\n\nAccount successfully created");
-		printf("\n\n\nYour Account Number is %s%d",create.account_code,create.account_number);
-		printf("\nYour Account PIN is %s",create.password);
+		printf("\n\n\tAccount successfully created");
+		printf("\n\n\n\tYour Account Number is %s%d",user.account_code,user.account_number);
+		printf("\n\tYour Account PIN is %s",user.password);
 		getch();
 	}	
 		else{
@@ -114,9 +114,9 @@ int main()
 		}
 		
 		else{
-			fread(&create,sizeof(struct account),1,ptr);
+			fread(&user,sizeof(struct account),1,ptr);
 			fclose(ptr);
-			if(strcmp(pin,create.password) == 0)
+			if(strcmp(pin,user.password) == 0)
 			break;
 				
 			else{
@@ -151,7 +151,7 @@ int main()
 					loop:
 					system("cls");
 					bankname();
-					printf("\n\t1.View balance\n\t2.Deposit money\n\t3.Withdraw money\n\t4.Money transfer\n\t5.Change PIN number\n\t6.Account Profile\n\t7.Log Out\n\t8.exit");
+					printf("\n\n\t1.View balance\n\n\t2.Deposit money\n\n\t3.Withdraw money\n\n\t4.Money transfer\n\n\t5.Change PIN number\n\n\t6.Account Profile\n\n\t7.Log Out\n\n\t8.exit");
 					printf("\n\n\t--> ");
 					scanf("%d",&opt);
 					
@@ -159,7 +159,7 @@ int main()
 						case 1:{
 							system("cls");
 							bankname();
-							printf("\n\n\tYour current balance is Rs.%d",create.balance);
+							printf("\n\n\tYour current balance is Rs.%d",user.balance);
 							break;
 						}
 						case 2:{
@@ -167,9 +167,9 @@ int main()
 							bankname();
 							printf("\n\n\tEnter amount to deposit : ");
 							scanf("%d",&amt);
-							create.balance += amt;
+							user.balance += amt;
 							ptr = fopen(filename,"w");
-							fwrite(&create,sizeof(struct account),1,ptr);
+							fwrite(&user,sizeof(struct account),1,ptr);
 							if(fwrite != NULL)
 							printf("\n\n\tRS.%d Successfully deposited",amt);
 							else
@@ -182,12 +182,12 @@ int main()
 							bankname();
 							printf("\n\n\tEnter amount to withdraw : ");
 							scanf("%d",&amt);
-							if(amt>create.balance)
+							if(amt>user.balance)
 							printf("\n\n\tInsufficient amount in your account to be withdrawn");	
 							else{
 							ptr = fopen(filename,"w");
-							create.balance -= amt;	
-							fwrite(&create,sizeof(struct account),1,ptr);
+							user.balance -= amt;	
+							fwrite(&user,sizeof(struct account),1,ptr);
 							fclose(ptr);
 							if(fwrite != NULL)
 							printf("\n\n\tYou have withdrawn RS.%d",amt);
@@ -203,6 +203,13 @@ int main()
 						getchar();
 						printf("\n\n\tEnter the account number where you want to tranfer money : ");
 						gets(acc_num);
+						strcpy(user_acc,user.account_code);
+						sprintf(code,"%d",user.account_number);
+						strcat(user_acc,code);
+						if(strcmp(acc_num,user_acc) == 0){
+						printf("\n\n\tCannot tranfer money to your account from your account");
+						break;
+					}
 						printf("\n\tEnter the amount to tranfer : ");
 						scanf("%d",&amt);
 						ptr = fopen(strcat(acc_num,".bin"),"rb");
@@ -211,7 +218,7 @@ int main()
 						else{
 							fread(&user1,sizeof(struct account),1,ptr);
 							fclose(ptr);
-							if(amt > create.balance)
+							if(amt > user.balance)
 								printf("\n\n\n\t\tInsufficient balance in your account to transfer");
 							
 							else{
@@ -223,8 +230,8 @@ int main()
 								if(fwrite != 0){
 									printf("\n\n\tRs.%d successfully tranfered to account %s%d",amt,user1.account_code,user1.account_number);
 									ptr = fopen(filename,"w");
-									create.balance -= amt;
-									fwrite(&create,sizeof(struct account),1,ptr);
+									user.balance -= amt;
+									fwrite(&user,sizeof(struct account),1,ptr);
 									fclose(ptr);
 								}
 								else{
@@ -247,7 +254,7 @@ int main()
 							break;
 						}
 						fclose(ptr);
-						if(strcmp(create.password,pin) == 0){
+						if(strcmp(user.password,pin) == 0){
 							printf("\n\tEnter new PIN number : ");
 							gets(pin);
 							if(strlen(pin)!=4){
@@ -255,8 +262,8 @@ int main()
 							goto pinchange;
 					}
 							ptr = fopen(filename,"w");
-							strcpy(create.password,pin);
-							fwrite(&create,sizeof(struct account),1,ptr);
+							strcpy(user.password,pin);
+							fwrite(&user,sizeof(struct account),1,ptr);
 							fclose(ptr);
 							if(fwrite != NULL)
 							printf("\n\n\t\tPIN successfully changed");
@@ -276,15 +283,15 @@ int main()
 							printf("\n\n\t\tERROR IN ACCESSING ACCOUNT");
 							break;	
 						}
-						fread(&create,sizeof(struct account),1,ptr);
-						printf("\n\n\tAccount Number : %s%d",create.account_code,create.account_number);
-						printf("\n\n\tName : %s",create.name);
-						printf("\n\n\tCNIC Number : %s",create.CNIC);
-						printf("\n\n\tDate of Birth : %s",create.dob);
-						printf("\n\n\tContact Number : %s",create.contact);
-						printf("\n\n\tEmail ID : %s",create.email);
-						printf("\n\n\tCity : %s",create.city);
-						printf("\n\n\tAddress : %s",create.address);
+						fread(&user,sizeof(struct account),1,ptr);
+						printf("\n\n\tAccount Number : %s%d",user.account_code,user.account_number);
+						printf("\n\n\tName : %s",user.name);
+						printf("\n\n\tCNIC Number : %s",user.CNIC);
+						printf("\n\n\tDate of Birth : %s",user.dob);
+						printf("\n\n\tContact Number : %s",user.contact);
+						printf("\n\n\tEmail ID : %s",user.email);
+						printf("\n\n\tCity : %s",user.city);
+						printf("\n\n\tAddress : %s",user.address);
 						break;
 					}	
 					case 7:{
@@ -295,7 +302,7 @@ int main()
 						scanf("%c",&logout);
 						if(logout == 'y' || logout == 'Y'){
 						system("cls");
-						goto start;
+						main();
 					}
 						else
 						goto loop;
