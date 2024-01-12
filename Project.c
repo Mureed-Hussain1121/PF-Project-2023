@@ -22,6 +22,7 @@ void bankname();
 
 int main()
 {
+	printf("\nTestting!!");
 	start:
 	system("cls");
 	bankname(); 
